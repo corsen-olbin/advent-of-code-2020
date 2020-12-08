@@ -3,7 +3,6 @@ defmodule AOCDay7 do
     body
     |> String.split("\r\n")
     |> create_bag_map
-    #|> print_map
     |> calculate_bags_that_hold_shiny_gold
     |> Enum.count
     |> print_results
@@ -13,7 +12,6 @@ defmodule AOCDay7 do
   def create_bag_map(rule_list) do
     rule_list
     |> Enum.map(fn x -> get_holder_and_holdee_list(x) end)
-    #|> Enum.map(fn x -> Regex.named_captures(~r/(?<holder>[a-z]+ [a-z]+) bags contain (\d) (?<holdee1>[a-z]+ [a-z]+) bags?(?:,|\.)? ?(\d)? ?(?<holdee2>[a-z]+ [a-z]+)?/, x) end)
     |> Enum.filter(fn {_, v} -> v != nil and v != [] end)
     |> Enum.reduce(%{}, fn {k, v}, acc -> add_holdees_to_map(acc, k, v) end)
   end
@@ -74,7 +72,7 @@ defmodule AOCDay7 do
     calculate_bags_that_hold_shiny_gold_rec(map, filtered_to_check ++ acc, filtered_to_check ++ tail)
   end
 
-  defp print_results(num), do: IO.puts("# of bags that eventually can hold 1 shiny gold bag: #{num}")
+  defp print_results(num), do: IO.puts("# of bags that eventually contain at least 1 shiny gold bag: #{num}")
 end
 
 case File.read("./Day7Values.txt") do
