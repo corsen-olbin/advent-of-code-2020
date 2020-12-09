@@ -69,6 +69,7 @@ defmodule AOCDay7 do
   def calculate_bags_that_hold_shiny_gold_rec(map, acc, [head | tail]) do
     bags_to_check = Map.get(map, head, [])
     filtered_to_check = Enum.filter(bags_to_check, fn x -> !Enum.member?(acc, x) end)
+
     calculate_bags_that_hold_shiny_gold_rec(map, filtered_to_check ++ acc, filtered_to_check ++ tail)
   end
 
