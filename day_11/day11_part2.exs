@@ -43,14 +43,14 @@ defmodule Day11 do
 
   def check_to_become_occupied(current_map, change_map, x, y, is_change) do
     surrounding = [
-      Matrix.get(current_map, x - 1, y - 1, "."),
-      Matrix.get(current_map, x - 1, y    , "."),
-      Matrix.get(current_map, x - 1, y + 1, "."),
-      Matrix.get(current_map, x    , y - 1, "."),
-      Matrix.get(current_map, x    , y + 1, "."),
-      Matrix.get(current_map, x + 1, y - 1, "."),
-      Matrix.get(current_map, x + 1, y    , "."),
-      Matrix.get(current_map, x + 1, y + 1, ".")
+      recurse_search_direction(current_map, x, y, &(&1 - 1), &(&1 - 1)),
+      recurse_search_direction(current_map, x, y, &(&1 - 1), &(&1)    ),
+      recurse_search_direction(current_map, x, y, &(&1 - 1), &(&1 + 1)),
+      recurse_search_direction(current_map, x, y, &(&1)    , &(&1 - 1)),
+      recurse_search_direction(current_map, x, y, &(&1)    , &(&1 + 1)),
+      recurse_search_direction(current_map, x, y, &(&1 + 1), &(&1 - 1)),
+      recurse_search_direction(current_map, x, y, &(&1 + 1), &(&1)    ),
+      recurse_search_direction(current_map, x, y, &(&1 + 1), &(&1 + 1)),
     ]
 
     case Enum.count(surrounding, fn x -> x == "#" end) == 0 do
@@ -61,19 +61,30 @@ defmodule Day11 do
 
   def check_to_become_unoccupied(current_map, change_map, x, y, is_change) do
     surrounding = [
-      Matrix.get(current_map, x - 1, y - 1, "."),
-      Matrix.get(current_map, x - 1, y    , "."),
-      Matrix.get(current_map, x - 1, y + 1, "."),
-      Matrix.get(current_map, x    , y - 1, "."),
-      Matrix.get(current_map, x    , y + 1, "."),
-      Matrix.get(current_map, x + 1, y - 1, "."),
-      Matrix.get(current_map, x + 1, y    , "."),
-      Matrix.get(current_map, x + 1, y + 1, ".")
+      recurse_search_direction(current_map, x, y, &(&1 - 1), &(&1 - 1)),
+      recurse_search_direction(current_map, x, y, &(&1 - 1), &(&1)    ),
+      recurse_search_direction(current_map, x, y, &(&1 - 1), &(&1 + 1)),
+      recurse_search_direction(current_map, x, y, &(&1)    , &(&1 - 1)),
+      recurse_search_direction(current_map, x, y, &(&1)    , &(&1 + 1)),
+      recurse_search_direction(current_map, x, y, &(&1 + 1), &(&1 - 1)),
+      recurse_search_direction(current_map, x, y, &(&1 + 1), &(&1)    ),
+      recurse_search_direction(current_map, x, y, &(&1 + 1), &(&1 + 1)),
     ]
 
-    case Enum.count(surrounding, fn x -> x == "#" end) > 3 do
+    case Enum.count(surrounding, fn x -> x == "#" end) > 4 do
       true -> increment_x_y(current_map, Matrix.update(change_map, x, y, "L"), x, y, true)
       false -> increment_x_y(current_map, change_map, x, y, is_change or false)
+    end
+  end
+
+  defp recurse_search_direction(current_map, x, y, xfun, yfun) do
+    new_x = xfun.(x)
+    new_y = yfun.(y)
+    case Matrix.get(current_map, new_x, new_y, "!") do
+      "#" -> "#"
+      "L" -> "L"
+      "!" -> "!"
+      "." -> recurse_search_direction(current_map, new_x, new_y, xfun, yfun)
     end
   end
 
